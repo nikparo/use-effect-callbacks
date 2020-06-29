@@ -1,0 +1,45 @@
+{
+  "name": "use-effect-callbacks",
+  "version": "0.1.0",
+  "description": "A react hook for stable callbacks executed as effects",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikparo/use-effect-callbacks.git"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "useCallback",
+    "useEffect",
+    "useReducer"
+  ],
+  "author": "Nik Paro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nikparo/use-effect-callbacks/issues"
+  },
+  "homepage": "https://github.com/nikparo/use-effect-callbacks#readme",
+  "dependencies": {
+    "@types/react": "^16.9.41"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.9.5"
+  }
+}
