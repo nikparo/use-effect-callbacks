@@ -40,11 +40,12 @@ const effectReducer = (methods: Methods) => (oldEffects: Effects, action: Action
     }
   };
 
-  // Filter out already completed effects.
-  const newEffects = oldEffects.filter((effect: Effect) => !effect.done);
-  newEffects.push({ fn, done: false });
+  const effect: Effect = { fn, done: false };
 
-  return newEffects;
+  // Either all or none of the effects have run
+  const keepOld = !!oldEffects.length && !oldEffects[0].done;
+
+  return keepOld ? [...oldEffects, effect] : [effect];
 };
 
 const runEffect = (effect: Effect) => {
