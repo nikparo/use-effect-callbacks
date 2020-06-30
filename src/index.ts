@@ -10,11 +10,11 @@ interface Effect {
   done: boolean;
 }
 
-interface Methods {
+interface Callbacks {
   [x: string]: (...args: any) => any;
 }
 
-interface Callbacks {
+interface Methods {
   [x: string]: (...args: any) => Promise<any>;
 }
 
@@ -22,7 +22,7 @@ type Effects = Effect[];
 
 const initialEffects: Effects = [];
 
-const effectReducer = (methods: Methods) => (oldEffects: Effects, action: Action) => {
+const effectReducer = (callbacks: Callbacks) => (oldEffects: Effects, action: Action) => {
   const { type, payload } = action;
 
   if (type !== 'method') {
@@ -30,11 +30,11 @@ const effectReducer = (methods: Methods) => (oldEffects: Effects, action: Action
   }
 
   const { name, args, reject, resolve } = payload;
-  const method = methods[name];
+  const cb = callbacks[name];
 
   const fn = () => {
     try {
-      resolve(method(...args));
+      resolve(cb(...args));
     } catch (e) {
       reject(e);
     }
@@ -56,45 +56,44 @@ const runEffect = (effect: Effect) => {
   }
 };
 
-const useMethodCallbacks = (methods: Methods, dispatch: (action: Action) => void) => {
-  const methodNames = useMemo(
+const useStableMethods = (callbacks: Callbacks, dispatch: (action: Action) => void) => {
+  const callbackNames = useMemo(
     () =>
-      Object.keys(methods)
-        .filter((name) => typeof methods[name] === 'function')
+      Object.keys(callbacks)
+        .filter((name) => typeof callbacks[name] === 'function')
         .sort(),
-    [methods],
+    [callbacks],
   );
 
-  // Create stable callbacks according to the method names
+  // Create stable methods according to the method names
   return useMemo(() => {
-    const callbacks: Callbacks = {};
-    methodNames.forEach((name) => {
-      callbacks[name] = (...args) =>
+    const methods: Methods = {};
+    callbackNames.forEach((name) => {
+      methods[name] = (...args) =>
         new Promise((resolve, reject) => {
           dispatch({ type: 'method', payload: { args, name, reject, resolve } });
         });
     });
-
-    return callbacks;
-  }, methodNames);
+    return methods;
+  }, callbackNames);
 };
 
-export function useEffectCallbacks(methods: Methods) {
-  const [effects, dispatch] = useReducer(effectReducer(methods), initialEffects);
+export function useEffectCallbacks(callbacks: Callbacks) {
+  const [effects, dispatch] = useReducer(effectReducer(callbacks), initialEffects);
 
   useEffect(() => {
     effects.forEach(runEffect);
   }, [effects]);
 
-  return useMethodCallbacks(methods, dispatch);
+  return useStableMethods(callbacks, dispatch);
 }
 
-export function useLayoutEffectCallbacks(methods: Methods) {
-  const [effects, dispatch] = useReducer(effectReducer(methods), initialEffects);
+export function useLayoutEffectCallbacks(callbacks: Callbacks) {
+  const [effects, dispatch] = useReducer(effectReducer(callbacks), initialEffects);
 
   useLayoutEffect(() => {
     effects.forEach(runEffect);
   }, [effects]);
 
-  return useMethodCallbacks(methods, dispatch);
+  return useStableMethods(callbacks, dispatch);
 }
