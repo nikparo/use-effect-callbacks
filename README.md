@@ -29,6 +29,10 @@ npm install use-effect-callbacks
 ## Example: Get latest state
 
 ```js
+import { useEffectCallbacks } from 'use-effect-callbacks';
+
+// ...
+
 // Within parent component
 const [state, setState] = useState({ foo: 'bar' });
 const { getState } = useEffectCallbacks({
@@ -40,7 +44,7 @@ const { getState } = useEffectCallbacks({
 // Within memoized child component
 const handleClick = async () => {
   setState({ foo: 'baz' });
-  const latestState = await getState();
-  console.log(latestState); // -> { foo: 'baz' }
+  const nextState = await getState();
+  console.log(nextState); // -> { foo: 'baz' }
 };
 ```
