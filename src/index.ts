@@ -1,24 +1,6 @@
-import { useEffect, useLayoutEffect, useMemo, useReducer } from 'react';
-
-interface Action {
-  type: string;
-  payload: any;
-}
-
-interface Effect {
-  fn: () => void;
-  done: boolean;
-}
-
-interface Callbacks {
-  [x: string]: (...args: any) => any;
-}
-
-interface Methods {
-  [x: string]: (...args: any) => Promise<any>;
-}
-
-type Effects = Effect[];
+import { createContext, useEffect, useLayoutEffect, useMemo, useReducer } from 'react';
+import type { ReactChild } from 'react';
+import React = require('react');
 
 const initialEffects: Effects = [];
 
